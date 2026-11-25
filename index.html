@@ -5,80 +5,134 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Pokémon TCG — La mia collezione</title>
 <style>
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap');
 :root {
-  --bg:#0f0f1a; --surface:#1a1a2e; --surface2:#16213e; --border:#2a2a4a;
-  --text:#e8e8f0; --text2:#9090b0; --accent:#ffcb05; --accent2:#3b6be0;
-  --green:#43a047; --red:#e53935;
+  --bg:#1a0a00; --surface:#2a1500; --surface2:#1f1000; --border:#4a2800;
+  --text:#fff8ee; --text2:#c8a070; --accent:#ffcb05; --accent2:#e63f11;
+  --green:#27ae60; --red:#e74c3c; --blue:#2980b9;
+  --pokered:#cc0000; --pokeball-white:#f5f5f5;
 }
 *{box-sizing:border-box;margin:0;padding:0;}
-body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,sans-serif;min-height:100vh;}
-header{background:linear-gradient(135deg,#1a1a2e,#16213e,#0f3460);border-bottom:2px solid var(--accent);padding:14px 16px 10px;}
-header h1{font-size:1.3rem;color:var(--accent);font-weight:800;}
-header p{color:var(--text2);font-size:0.78rem;margin-top:2px;}
-.global-stats{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap;}
-.stat-pill{background:rgba(255,203,5,.12);border:1px solid rgba(255,203,5,.3);border-radius:20px;padding:3px 10px;font-size:0.72rem;color:var(--accent);font-weight:600;}
+body{background:var(--bg);color:var(--text);font-family:'Nunito',system-ui,sans-serif;min-height:100vh;background-image:radial-gradient(ellipse at top,#2d1500 0%,#1a0a00 60%);}
+
+/* ===== HEADER ===== */
+header{background:linear-gradient(135deg,#cc0000 0%,#aa0000 50%,#880000 100%);border-bottom:4px solid var(--accent);padding:14px 16px 12px;position:relative;overflow:hidden;}
+header::before{content:'';position:absolute;top:-40px;right:-40px;width:120px;height:120px;border-radius:50%;background:rgba(255,255,255,0.05);border:3px solid rgba(255,255,255,0.1);}
+header::after{content:'';position:absolute;top:-20px;right:-20px;width:60px;height:60px;border-radius:50%;background:rgba(255,255,255,0.08);}
+header h1{font-size:1.4rem;color:var(--accent);font-weight:900;text-shadow:0 2px 4px rgba(0,0,0,0.5);letter-spacing:-0.3px;}
+header p{color:rgba(255,255,255,0.75);font-size:0.78rem;margin-top:3px;font-weight:600;}
+.global-stats{display:flex;gap:7px;margin-top:10px;flex-wrap:wrap;}
+.stat-pill{background:rgba(0,0,0,0.3);border:2px solid rgba(255,203,5,0.5);border-radius:20px;padding:4px 12px;font-size:0.72rem;color:var(--accent);font-weight:800;backdrop-filter:blur(4px);}
+.stat-pill.value-pill{color:#69f0ae;border-color:rgba(105,240,174,0.4);}
+
+/* ===== VIEWS ===== */
 #view-sets,#view-cards{display:none;}
 #view-sets.active,#view-cards.active{display:block;}
-.controls{display:flex;flex-wrap:wrap;gap:8px;padding:10px 12px;background:var(--surface);border-bottom:1px solid var(--border);align-items:center;}
-.controls input,.controls select{background:var(--bg);border:1px solid var(--border);color:var(--text);padding:7px 10px;border-radius:8px;font-size:0.82rem;}
+
+/* ===== CONTROLS ===== */
+.controls{display:flex;flex-wrap:wrap;gap:8px;padding:10px 12px;background:var(--surface);border-bottom:2px solid var(--border);align-items:center;}
+.controls input,.controls select{background:var(--surface2);border:2px solid var(--border);color:var(--text);padding:7px 10px;border-radius:10px;font-size:0.82rem;font-family:'Nunito',sans-serif;font-weight:600;}
 .controls input{flex:1;min-width:130px;}
 .controls input:focus,.controls select:focus{outline:none;border-color:var(--accent);}
-.count-badge{margin-left:auto;background:var(--accent2);color:#fff;border-radius:20px;padding:3px 10px;font-size:0.72rem;font-weight:600;white-space:nowrap;}
-.era-section{margin-bottom:2px;}
-.era-header{display:flex;align-items:center;gap:8px;padding:9px 14px;cursor:pointer;background:var(--surface2);border-left:4px solid var(--accent);user-select:none;}
-.era-header:hover{background:#1f2a4a;}
-.era-header h2{font-size:0.88rem;font-weight:700;flex:1;}
-.era-badge{font-size:0.7rem;color:var(--text2);}
-.era-toggle{color:var(--accent);font-size:0.75rem;}
+.count-badge{margin-left:auto;background:var(--pokered);color:#fff;border-radius:20px;padding:4px 12px;font-size:0.72rem;font-weight:800;white-space:nowrap;border:2px solid rgba(255,255,255,0.2);}
+
+/* ===== ERA SECTIONS ===== */
+.era-section{margin-bottom:3px;}
+.era-header{display:flex;align-items:center;gap:8px;padding:10px 14px;cursor:pointer;background:var(--surface2);border-left:5px solid var(--accent);user-select:none;transition:background .15s;}
+.era-header:hover{background:#2a1800;}
+.era-header h2{font-size:0.9rem;font-weight:800;flex:1;}
+.era-badge{font-size:0.7rem;color:var(--text2);font-weight:700;}
+.era-toggle{color:var(--accent);font-size:0.8rem;font-weight:800;}
 .era-body{display:none;}
 .era-body.open{display:block;}
-.sets-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:8px;padding:10px 12px;}
-.set-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:11px 13px;cursor:pointer;transition:transform .15s,border-color .15s;position:relative;overflow:hidden;}
-.set-card:hover{transform:translateY(-2px);border-color:var(--accent);}
-.set-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;}
-.set-name{font-weight:700;font-size:0.88rem;}
+.sets-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;padding:10px 12px;}
+
+/* ===== SET CARD ===== */
+.set-card{background:var(--surface);border:2px solid var(--border);border-radius:14px;padding:0;cursor:pointer;transition:transform .15s,border-color .15s,box-shadow .15s;position:relative;overflow:hidden;}
+.set-card:hover{transform:translateY(-3px);border-color:var(--accent);box-shadow:0 6px 20px rgba(255,203,5,0.2);}
+.set-card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;}
+.set-logo-wrap{height:60px;display:flex;align-items:center;justify-content:center;padding:8px;background:rgba(0,0,0,0.2);}
+.set-logo{max-height:48px;max-width:100%;object-fit:contain;filter:drop-shadow(0 2px 4px rgba(0,0,0,0.5));}
+.set-logo-placeholder{font-size:1.6rem;}
+.set-card-body{padding:9px 11px 10px;}
+.set-name{font-weight:800;font-size:0.85rem;line-height:1.2;}
 .set-meta{display:flex;gap:6px;align-items:center;margin-top:5px;flex-wrap:wrap;}
-.set-year{color:var(--accent);font-size:0.72rem;font-weight:600;}
-.set-cards-count{font-size:0.72rem;color:var(--text2);}
-.set-progress-bar{height:4px;background:var(--border);border-radius:2px;margin-top:7px;}
-.set-progress-fill{height:100%;border-radius:2px;background:var(--green);transition:width .3s;}
-.set-progress-text{font-size:0.68rem;color:var(--text2);margin-top:3px;}
-.cards-header{display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--surface2);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:10;}
-.back-btn{background:var(--border);border:none;color:var(--text);padding:6px 12px;border-radius:6px;cursor:pointer;font-size:0.8rem;}
-.back-btn:hover{background:var(--accent2);}
-.cards-header h2{font-size:0.95rem;font-weight:700;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.cards-stats{font-size:0.72rem;color:var(--text2);white-space:nowrap;}
-.cards-controls{display:flex;gap:8px;padding:8px 12px;background:var(--surface);border-bottom:1px solid var(--border);flex-wrap:wrap;align-items:center;}
-.cards-controls input{background:var(--bg);border:1px solid var(--border);color:var(--text);padding:6px 10px;border-radius:7px;font-size:0.8rem;flex:1;min-width:110px;}
+.set-year{color:var(--accent);font-size:0.7rem;font-weight:800;}
+.set-cards-count{font-size:0.7rem;color:var(--text2);font-weight:700;}
+.set-progress-bar{height:5px;background:var(--border);border-radius:3px;margin-top:7px;}
+.set-progress-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--green),#69f0ae);transition:width .3s;}
+.set-progress-text{font-size:0.67rem;color:var(--text2);margin-top:3px;font-weight:700;}
+
+/* ===== CARDS HEADER ===== */
+.cards-header{display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--pokered);border-bottom:3px solid var(--accent);position:sticky;top:0;z-index:10;}
+.back-btn{background:rgba(0,0,0,0.3);border:2px solid rgba(255,255,255,0.3);color:#fff;padding:6px 12px;border-radius:8px;cursor:pointer;font-size:0.8rem;font-family:'Nunito',sans-serif;font-weight:800;}
+.back-btn:hover{background:rgba(0,0,0,0.5);}
+.cards-header h2{font-size:0.95rem;font-weight:900;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#fff;}
+.cards-stats{font-size:0.72rem;color:rgba(255,255,255,0.8);white-space:nowrap;font-weight:800;}
+.cards-set-value{font-size:0.68rem;color:#69f0ae;font-weight:800;white-space:nowrap;}
+
+.cards-controls{display:flex;gap:8px;padding:8px 12px;background:var(--surface);border-bottom:2px solid var(--border);flex-wrap:wrap;align-items:center;}
+.cards-controls input{background:var(--surface2);border:2px solid var(--border);color:var(--text);padding:6px 10px;border-radius:8px;font-size:0.8rem;flex:1;min-width:110px;font-family:'Nunito',sans-serif;font-weight:600;}
 .cards-controls input:focus{outline:none;border-color:var(--accent);}
-.cards-controls select{background:var(--bg);border:1px solid var(--border);color:var(--text);padding:6px 8px;border-radius:7px;font-size:0.78rem;}
-.btn-mark-all{background:var(--green);border:none;color:#fff;padding:6px 10px;border-radius:7px;cursor:pointer;font-size:0.72rem;font-weight:600;}
-.btn-unmark-all{background:var(--red);border:none;color:#fff;padding:6px 10px;border-radius:7px;cursor:pointer;font-size:0.72rem;font-weight:600;}
+.cards-controls select{background:var(--surface2);border:2px solid var(--border);color:var(--text);padding:6px 8px;border-radius:8px;font-size:0.78rem;font-family:'Nunito',sans-serif;font-weight:600;}
+.btn-mark-all{background:var(--green);border:none;color:#fff;padding:6px 10px;border-radius:8px;cursor:pointer;font-size:0.72rem;font-weight:800;font-family:'Nunito',sans-serif;}
+.btn-unmark-all{background:var(--red);border:none;color:#fff;padding:6px 10px;border-radius:8px;cursor:pointer;font-size:0.72rem;font-weight:800;font-family:'Nunito',sans-serif;}
+.btn-scan{background:var(--accent);border:none;color:#000;padding:6px 10px;border-radius:8px;cursor:pointer;font-size:0.72rem;font-weight:800;font-family:'Nunito',sans-serif;}
+.btn-scan.active{background:#ff9800;color:#000;}
+
+/* ===== CARDS GRID ===== */
 .loading{text-align:center;padding:40px;color:var(--text2);}
 .loading-spinner{font-size:2rem;animation:spin 1s linear infinite;display:inline-block;}
 @keyframes spin{to{transform:rotate(360deg);}}
-.error-box{background:#2a1a1a;border:1px solid var(--red);border-radius:8px;padding:14px;margin:12px;color:#ff8a80;font-size:0.85rem;}
-/* Cards grid */
+.error-box{background:#2a1a1a;border:2px solid var(--red);border-radius:10px;padding:14px;margin:12px;color:#ff8a80;font-size:0.85rem;}
 .cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;padding:12px;}
-.card-item{background:var(--surface);border:2px solid var(--border);border-radius:10px;overflow:hidden;cursor:pointer;transition:transform .15s,border-color .15s;position:relative;}
-.card-item:hover{transform:translateY(-3px);border-color:var(--accent2);}
-.card-item.owned{border-color:var(--green);}
+
+/* ===== CARD ITEM ===== */
+.card-item{background:var(--surface);border:2px solid var(--border);border-radius:12px;overflow:hidden;cursor:pointer;transition:transform .15s,border-color .15s,box-shadow .15s;position:relative;}
+.card-item:hover{transform:translateY(-3px);border-color:var(--accent2);box-shadow:0 6px 16px rgba(230,63,17,0.25);}
+.card-item.owned{border-color:var(--green);box-shadow:0 0 10px rgba(39,174,96,0.3);}
+.card-item.scan-mode{border-color:var(--accent);border-width:3px;}
 .card-img-wrap{position:relative;aspect-ratio:3/4;background:#111;overflow:hidden;}
 .card-img{width:100%;height:100%;object-fit:cover;display:block;transition:opacity .3s;}
 .card-img.loading-img{opacity:0;}
 .card-img-placeholder{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--text2);font-size:0.7rem;text-align:center;padding:8px;flex-direction:column;gap:4px;}
-.card-owned-badge{position:absolute;top:5px;right:5px;width:22px;height:22px;border-radius:50%;background:var(--green);display:flex;align-items:center;justify-content:center;font-size:0.75rem;color:#fff;opacity:0;transition:opacity .15s;}
+.card-owned-badge{position:absolute;top:5px;right:5px;width:24px;height:24px;border-radius:50%;background:var(--green);display:flex;align-items:center;justify-content:center;font-size:0.8rem;color:#fff;opacity:0;transition:opacity .15s;box-shadow:0 2px 6px rgba(0,0,0,0.4);}
 .card-item.owned .card-owned-badge{opacity:1;}
-.card-info{padding:6px 8px;}
-.card-number{font-size:0.6rem;color:var(--text2);}
-.card-name{font-size:0.75rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.card-rarity{font-size:0.6rem;color:var(--text2);}
-.card-price{font-size:0.62rem;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+
+/* duplicates badge */
+.card-dup-badge{position:absolute;top:5px;left:5px;background:var(--accent);color:#000;border-radius:10px;padding:1px 6px;font-size:0.6rem;font-weight:900;display:none;}
+.card-dup-badge.visible{display:block;}
+
+.card-info{padding:6px 8px 7px;}
+.card-number{font-size:0.6rem;color:var(--text2);font-weight:700;}
+.card-name{font-size:0.75rem;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+
+/* rarity */
+.card-rarity{font-size:0.6rem;font-weight:700;margin-top:1px;}
+.rarity-C{color:#aaa;}
+.rarity-U{color:#7ecfff;}
+.rarity-R{color:#f4c430;}
+.rarity-RH,.rarity-H{color:#f4c430;text-shadow:0 0 6px rgba(244,196,48,0.6);}
+.rarity-RRH,.rarity-SR,.rarity-UR,.rarity-IR,.rarity-SHR{color:#e879f9;text-shadow:0 0 6px rgba(232,121,249,0.6);}
+.rarity-other{color:#ccc;}
+
+/* price */
+.card-price{font-size:0.62rem;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer;font-weight:700;}
 .card-price.price-loading{color:var(--text2);}
 .card-price.price-ok{color:#69f0ae;}
-.card-price.price-none{color:var(--border);}
-.no-results{text-align:center;color:var(--text2);padding:40px;font-size:0.88rem;}
-/* Era colors */
+.card-price.price-none{color:var(--text2);}
+.card-price:hover{text-decoration:underline;}
+
+/* scan mode qty controls */
+.card-qty{display:none;align-items:center;justify-content:center;gap:6px;padding:4px 6px;background:rgba(0,0,0,0.4);}
+.scan-mode .card-qty{display:flex;}
+.qty-btn{background:var(--accent);border:none;color:#000;width:22px;height:22px;border-radius:50%;font-size:0.85rem;font-weight:900;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;}
+.qty-btn.minus{background:#e74c3c;color:#fff;}
+.qty-val{font-size:0.8rem;font-weight:900;color:var(--accent);min-width:16px;text-align:center;}
+
+.no-results{text-align:center;color:var(--text2);padding:40px;font-size:0.88rem;font-weight:700;}
+
+/* ===== ERA COLORS ===== */
 .era-WoTC .set-card::before{background:#b71c1c;} .era-WoTC .era-header{border-left-color:#ef5350;}
 .era-EX .set-card::before{background:#1565c0;} .era-EX .era-header{border-left-color:#42a5f5;}
 .era-DP .set-card::before{background:#4a148c;} .era-DP .era-header{border-left-color:#ab47bc;}
@@ -97,8 +151,9 @@ header p{color:var(--text2);font-size:0.78rem;margin-top:2px;}
   <p>Clicca un set · Spunta le carte che hai · Salvato automaticamente</p>
   <div class="global-stats">
     <span class="stat-pill" id="stat-sets">Set: —</span>
-    <span class="stat-pill" id="stat-cards">Carte totali: —</span>
+    <span class="stat-pill" id="stat-cards">Carte: —</span>
     <span class="stat-pill" id="stat-owned">Possedute: 0</span>
+    <span class="stat-pill value-pill" id="stat-value">Valore: —</span>
   </div>
 </header>
 
@@ -127,7 +182,10 @@ header p{color:var(--text2);font-size:0.78rem;margin-top:2px;}
   <div class="cards-header">
     <button class="back-btn" onclick="goBack()">← Indietro</button>
     <h2 id="cards-title">—</h2>
-    <div class="cards-stats" id="cards-stats">—</div>
+    <div style="display:flex;flex-direction:column;align-items:flex-end;gap:2px;">
+      <div class="cards-stats" id="cards-stats">—</div>
+      <div class="cards-set-value" id="cards-set-value"></div>
+    </div>
   </div>
   <div class="cards-controls">
     <input type="text" id="card-search" placeholder="🔍 Cerca carta…" oninput="renderCards()">
@@ -136,6 +194,7 @@ header p{color:var(--text2);font-size:0.78rem;margin-top:2px;}
       <option value="owned">✅ Ho</option>
       <option value="missing">❌ Manca</option>
     </select>
+    <button class="btn-scan" id="btn-scan" onclick="toggleScanMode()">📷 Scan</button>
     <button class="btn-mark-all" onclick="markAll(true)">✅ Tutte</button>
     <button class="btn-unmark-all" onclick="markAll(false)">❌ Nessuna</button>
   </div>
@@ -143,12 +202,9 @@ header p{color:var(--text2);font-size:0.78rem;margin-top:2px;}
 </div>
 
 <script>
-// ===================== CONFIG =====================
-// TCGdex — gratuita, nessuna API key richiesta
-// Docs: https://www.tcgdex.dev/docs
 const API_BASE = 'https://api.tcgdex.net/v2/en';
 
-// ===================== ERA MAP =====================
+// ===== ERA MAP =====
 const ERAS = [
   {id:'WoTC',name:'Wizards of the Coast',years:'1999–2003'},
   {id:'EX',name:'EX Series',years:'2003–2007'},
@@ -161,183 +217,191 @@ const ERAS = [
   {id:'SV',name:'Scarlet & Violet',years:'2023–2025'},
   {id:'ME',name:'Mega Evolution',years:'2025–'},
 ];
-
-// TCGdex series → era
 const SERIES_ERA = {
-  'Base':        'WoTC',
-  'Gym':         'WoTC',
-  'Neo':         'WoTC',
-  'Legendary':   'WoTC',
-  'e-Card':      'WoTC',
-  'EX':          'EX',
-  'Diamond & Pearl': 'DP',
-  'Platinum':    'DP',
-  'HeartGold & SoulSilver': 'HGSS',
-  'Call of Legends': 'HGSS',
-  'Black & White': 'BW',
-  'XY':          'XY',
-  'Sun & Moon':  'SM',
-  'Sword & Shield': 'SWSH',
-  'Scarlet & Violet': 'SV',
-  'Scarlet and Violet': 'SV',
-  'Scarlet & Violet — Prismatic Evolutions': 'SV',
+  'Base':'WoTC','Gym':'WoTC','Neo':'WoTC','Legendary':'WoTC','e-Card':'WoTC',
+  'EX':'EX','Diamond & Pearl':'DP','Platinum':'DP',
+  'HeartGold & SoulSilver':'HGSS','Call of Legends':'HGSS',
+  'Black & White':'BW','XY':'XY','Sun & Moon':'SM',
+  'Sword & Shield':'SWSH','Scarlet & Violet':'SV','Scarlet and Violet':'SV',
 };
-
-// set.id → era (override per quelli senza serie chiara)
 const ERA_OVERRIDE = {
-  // WoTC
   'base1':'WoTC','base2':'WoTC','base3':'WoTC','base4':'WoTC',
-  'base5':'WoTC','base6':'WoTC',
-  'gym1':'WoTC','gym2':'WoTC',
+  'base5':'WoTC','base6':'WoTC','gym1':'WoTC','gym2':'WoTC',
   'neo1':'WoTC','neo2':'WoTC','neo3':'WoTC','neo4':'WoTC',
-  'ecard1':'WoTC','ecard2':'WoTC','ecard3':'WoTC',
-  'si1':'WoTC','lc':'WoTC',
+  'ecard1':'WoTC','ecard2':'WoTC','ecard3':'WoTC','si1':'WoTC','lc':'WoTC',
 };
-
-function getEra(set) {
+function getEra(set){
   if(ERA_OVERRIDE[set.id]) return ERA_OVERRIDE[set.id];
-  if(set.serie) {
-    // TCGdex restituisce serie come stringa o oggetto {name}
-    const sname = typeof set.serie === 'string' ? set.serie : (set.serie.name || '');
+  if(set.serie){
+    const sname=typeof set.serie==='string'?set.serie:(set.serie.name||'');
     if(SERIES_ERA[sname]) return SERIES_ERA[sname];
-    // Fallback parziale
-    if(sname.includes('Scarlet') || sname.includes('Violet')) return 'SV';
-    if(sname.includes('Sword') || sname.includes('Shield')) return 'SWSH';
-    if(sname.includes('Sun') || sname.includes('Moon')) return 'SM';
+    if(sname.includes('Scarlet')||sname.includes('Violet')) return 'SV';
+    if(sname.includes('Sword')||sname.includes('Shield')) return 'SWSH';
+    if(sname.includes('Sun')||sname.includes('Moon')) return 'SM';
     if(sname.includes('XY')) return 'XY';
-    if(sname.includes('Black') || sname.includes('White')) return 'BW';
-    if(sname.includes('HeartGold') || sname.includes('SoulSilver') || sname.includes('Call')) return 'HGSS';
-    if(sname.includes('Platinum') || sname.includes('Diamond') || sname.includes('Pearl')) return 'DP';
+    if(sname.includes('Black')||sname.includes('White')) return 'BW';
+    if(sname.includes('HeartGold')||sname.includes('SoulSilver')||sname.includes('Call')) return 'HGSS';
+    if(sname.includes('Platinum')||sname.includes('Diamond')||sname.includes('Pearl')) return 'DP';
     if(sname.includes('EX')) return 'EX';
-    if(sname.includes('Neo') || sname.includes('Base') || sname.includes('Gym') || sname.includes('Legendary') || sname.includes('e-Card')) return 'WoTC';
+    if(sname.includes('Neo')||sname.includes('Base')||sname.includes('Gym')||sname.includes('Legendary')||sname.includes('e-Card')) return 'WoTC';
   }
-  return 'SV'; // default: ultimo era
+  return 'SV';
 }
 
-// ===================== STATE =====================
-let owned = {};
+// ===== RARITY =====
+function rarityClass(r){
+  if(!r) return '';
+  const ru=r.toUpperCase();
+  if(ru==='C'||ru==='COMMON') return 'rarity-C';
+  if(ru==='U'||ru==='UNCOMMON') return 'rarity-U';
+  if(ru==='R'||ru==='RARE') return 'rarity-R';
+  if(ru==='RH'||ru==='RARE HOLO'||ru==='H'||ru==='HOLO') return 'rarity-RH';
+  if(['RRH','SR','UR','IR','SHR','RARE ULTRA','RARE SECRET','ILLUSTRATION RARE','SPECIAL ILLUSTRATION RARE'].includes(ru)) return 'rarity-RRH';
+  return 'rarity-other';
+}
+function rarityLabel(r){
+  if(!r) return '';
+  const map={'C':'◆ Common','U':'◆◆ Uncommon','R':'★ Rare','RH':'★ Rare Holo','H':'★ Holo',
+    'RRH':'✦ Rare Holo EX','SR':'✦ Secret Rare','UR':'✦ Ultra Rare','IR':'✦ Illustration Rare',
+    'SHR':'✦ Special Illustration','V':'★ V','VMAX':'★ VMAX','VSTAR':'★ VSTAR',
+    'EX':'★ ex','GX':'★ GX','ACE':'★ ACE SPEC'};
+  return map[r.toUpperCase()] || r;
+}
+
+// ===== STATE =====
+let owned = {};      // key → true (possedute)
+let dupes = {};      // key → count (duplicati, 0=non posseduta, 1=una copia, 2+=duplicati)
 let allSets = [];
 let currentSetId = null;
 let currentCards = [];
+let scanMode = false;
 
 function loadOwned(){
-  try{ owned = JSON.parse(localStorage.getItem('pkm3_owned')||'{}'); }catch(e){ owned={}; }
+  try{ owned=JSON.parse(localStorage.getItem('pkm3_owned')||'{}'); }catch(e){ owned={}; }
+  try{ dupes=JSON.parse(localStorage.getItem('pkm3_dupes')||'{}'); }catch(e){ dupes={}; }
 }
 function saveOwned(){
-  try{ localStorage.setItem('pkm3_owned', JSON.stringify(owned)); }catch(e){}
+  try{ localStorage.setItem('pkm3_owned',JSON.stringify(owned)); }catch(e){}
+  try{ localStorage.setItem('pkm3_dupes',JSON.stringify(dupes)); }catch(e){}
 }
 
-// ===================== API =====================
+// ===== API =====
 async function apiFetch(path){
-  const r = await fetch(API_BASE + path);
+  const r=await fetch(API_BASE+path);
   if(!r.ok) throw new Error(`HTTP ${r.status}`);
   return r.json();
 }
+async function fetchAllSets(){ return apiFetch('/sets'); }
+async function fetchSetDetail(id){ return apiFetch('/sets/'+id); }
+async function fetchCardDetail(id){ return apiFetch('/cards/'+id); }
 
-async function fetchAllSets(){
-  return apiFetch('/sets');
+// ===== PRICE =====
+const priceCache={};
+function formatPrice(v,cur){
+  if(!v||v===0) return null;
+  return cur==='EUR'?v.toFixed(2)+' €':'$'+v.toFixed(2);
 }
-
-async function fetchSetDetail(setId){
-  // TCGdex: GET /sets/{id} restituisce l'oggetto con .cards = [{id, localId, name, image}]
-  return apiFetch('/sets/' + setId);
-}
-
-async function fetchCardDetail(cardId){
-  return apiFetch('/cards/' + cardId);
-}
-
-// Cache prezzi in memoria per la sessione corrente
-const priceCache = {};
-
-function formatPrice(val, currency){
-  if(val == null || val === 0) return null;
-  return currency === 'EUR'
-    ? val.toFixed(2) + ' €'
-    : '$' + val.toFixed(2);
-}
-
-function getPriceLabel(pricing){
+function getPriceValue(pricing){
   if(!pricing) return null;
-  // Cardmarket: preferisci avg30 (media 30 giorni), fallback su trendPrice o lowPrice
-  const cm = pricing.cardmarket;
-  if(cm){
-    const v = cm.avg30 || cm.trendPrice || cm.lowPrice || cm.avg7 || cm.avg1;
-    if(v) return '📈 ' + formatPrice(v, 'EUR');
-  }
-  // TCGPlayer: marketPrice normal
-  const tp = pricing.tcgplayer;
-  if(tp){
-    const v = (tp.normal && tp.normal.marketPrice) || (tp.holo && tp.holo.marketPrice);
-    if(v) return '📈 ' + formatPrice(v, 'USD');
-  }
+  const cm=pricing.cardmarket;
+  if(cm){ const v=cm.avg30||cm.trendPrice||cm.lowPrice||cm.avg7||cm.avg1; if(v) return {val:v,cur:'EUR'}; }
+  const tp=pricing.tcgplayer;
+  if(tp){ const v=(tp.normal&&tp.normal.marketPrice)||(tp.holo&&tp.holo.marketPrice); if(v) return {val:v,cur:'USD'}; }
   return null;
 }
+function getPriceLabel(pricing){
+  const p=getPriceValue(pricing);
+  if(!p) return null;
+  return '📈 '+formatPrice(p.val,p.cur);
+}
 
-// Carica prezzi in background a lotti di 5
-async function loadPricesInBackground(cards, setId){
-  const BATCH = 5;
-  for(let i = 0; i < cards.length; i += BATCH){
-    // Se l'utente ha cambiato set, interrompi
-    if(currentSetId !== setId) return;
-    const batch = cards.slice(i, i + BATCH);
-    await Promise.all(batch.map(async c => {
-      if(priceCache[c.id] !== undefined) return; // già in cache
-      try{
-        const detail = await fetchCardDetail(c.id);
-        priceCache[c.id] = detail.pricing || null;
-      }catch(e){
-        priceCache[c.id] = null;
-      }
-      // Aggiorna l'elemento nel DOM se visibile
-      const el = document.querySelector(`[data-card-id="${c.id}"] .card-price`);
-      if(el){
-        const label = getPriceLabel(priceCache[c.id]);
-        if(label){ el.textContent = label; el.className = 'card-price price-ok'; }
-        else { el.textContent = '—'; el.className = 'card-price price-none'; }
-      }
+async function loadPricesInBackground(cards,setId){
+  const BATCH=5;
+  for(let i=0;i<cards.length;i+=BATCH){
+    if(currentSetId!==setId) return;
+    const batch=cards.slice(i,i+BATCH);
+    await Promise.all(batch.map(async c=>{
+      if(priceCache[c.id]!==undefined) return;
+      try{ const d=await fetchCardDetail(c.id); priceCache[c.id]=d.pricing||null; }
+      catch(e){ priceCache[c.id]=null; }
+      updateCardPriceInDOM(c);
     }));
-    // Piccola pausa tra i lotti per non stressare l'API
-    if(i + BATCH < cards.length) await new Promise(r => setTimeout(r, 300));
+    updateSetValueDisplay();
+    if(i+BATCH<cards.length) await new Promise(r=>setTimeout(r,300));
   }
+  updateSetValueDisplay();
+  updateGlobalStats();
 }
 
-// ===================== GLOBAL STATS =====================
+function updateCardPriceInDOM(c){
+  const cardEl=document.querySelector(`[data-card-id="${c.id}"]`);
+  const el=cardEl?cardEl.querySelector('.card-price'):null;
+  if(!el) return;
+  const label=getPriceLabel(priceCache[c.id]);
+  const cmUrl='https://www.cardmarket.com/en/Pokemon/Products/Search?searchString='+encodeURIComponent(c.name);
+  const handler=`event.stopPropagation();window.open('${cmUrl}','_blank')`;
+  if(label){ el.innerHTML=label+' <span style="opacity:.6">🔗</span>'; el.className='card-price price-ok'; }
+  else { el.innerHTML='— <span style="opacity:.6">🔗</span>'; el.className='card-price price-none'; }
+  el.setAttribute('onclick',handler);
+}
+
+function getOwnedValue(){
+  let total=0;
+  Object.keys(owned).forEach(key=>{
+    const cardId=key.split('_').slice(1).join('_');
+    if(priceCache[cardId]){
+      const p=getPriceValue(priceCache[cardId]);
+      if(p) total+=p.val;
+    }
+  });
+  return total;
+}
+
+function updateSetValueDisplay(){
+  if(!currentSetId) return;
+  let val=0;
+  currentCards.forEach(c=>{
+    if(owned[currentSetId+'_'+c.id]&&priceCache[c.id]){
+      const p=getPriceValue(priceCache[c.id]);
+      if(p) val+=p.val;
+    }
+  });
+  const el=document.getElementById('cards-set-value');
+  if(el) el.textContent=val>0?`💶 ${val.toFixed(2)} €`:'';
+}
+
+// ===== GLOBAL STATS =====
 function updateGlobalStats(){
-  const ownedCount = Object.keys(owned).length;
-  document.getElementById('stat-sets').textContent = `Set: ${allSets.length}`;
-  const total = allSets.reduce((s,x)=>s+(x.cardCount||0),0);
-  document.getElementById('stat-cards').textContent = `Carte totali: ${total.toLocaleString('it')}`;
-  document.getElementById('stat-owned').textContent = `Possedute: ${ownedCount}`;
+  const ownedCount=Object.keys(owned).length;
+  document.getElementById('stat-sets').textContent=`Set: ${allSets.length}`;
+  const total=allSets.reduce((s,x)=>s+(x.cardCount||0),0);
+  document.getElementById('stat-cards').textContent=`Carte: ${total.toLocaleString('it')}`;
+  document.getElementById('stat-owned').textContent=`Possedute: ${ownedCount}`;
+  const val=getOwnedValue();
+  document.getElementById('stat-value').textContent=val>0?`💶 ${val.toFixed(2)} €`:'Valore: —';
 }
-
 function countOwnedInSet(setId){
   return Object.keys(owned).filter(k=>k.startsWith(setId+'_')).length;
 }
 
-// ===================== SETS VIEW =====================
+// ===== SETS VIEW =====
 function filterSets(){
-  const q = document.getElementById('search').value.toLowerCase().trim();
-  const era = document.getElementById('eraFilter').value;
-  const filtered = allSets.filter(s=>{
-    if(q && !s.name.toLowerCase().includes(q)) return false;
-    const e = s._era;
-    if(era && e !== era) return false;
+  const q=document.getElementById('search').value.toLowerCase().trim();
+  const era=document.getElementById('eraFilter').value;
+  const filtered=allSets.filter(s=>{
+    if(q&&!s.name.toLowerCase().includes(q)) return false;
+    if(era&&s._era!==era) return false;
     return true;
   });
-  document.getElementById('countBadge').textContent = filtered.length+' set';
+  document.getElementById('countBadge').textContent=filtered.length+' set';
   renderSets(filtered);
 }
 
 function renderSets(filtered){
-  const app = document.getElementById('sets-app');
+  const app=document.getElementById('sets-app');
   if(!filtered.length){ app.innerHTML='<div class="no-results">Nessun set trovato.</div>'; return; }
-  const byEra = {};
-  filtered.forEach(s=>{
-    const e = s._era||'SV';
-    if(!byEra[e]) byEra[e]=[];
-    byEra[e].push(s);
-  });
+  const byEra={};
+  filtered.forEach(s=>{ const e=s._era||'SV'; if(!byEra[e]) byEra[e]=[]; byEra[e].push(s); });
   let html='';
   ERAS.forEach(era=>{
     const sets=byEra[era.id];
@@ -354,14 +418,22 @@ function renderSets(filtered){
       const oc=countOwnedInSet(s.id);
       const total=s.cardCount||0;
       const pct=total?Math.round(oc/total*100):0;
+      const logoUrl=s.logo?s.logo+'.png':null;
       html+=`<div class="set-card" onclick="openSet('${s.id}')">
-        <div class="set-name">${s.name}</div>
-        <div class="set-meta">
-          <span class="set-year">📅 ${(s.releaseDate||'').replace(/\//g,'-')}</span>
-          <span class="set-cards-count">🃏 ${total}</span>
+        <div class="set-logo-wrap">
+          ${logoUrl
+            ? `<img class="set-logo" src="${logoUrl}" alt="${s.name}" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><span class="set-logo-placeholder" style="display:none">🃏</span>`
+            : `<span class="set-logo-placeholder">🃏</span>`}
         </div>
-        <div class="set-progress-bar"><div class="set-progress-fill" style="width:${pct}%"></div></div>
-        <div class="set-progress-text">${oc}/${total} · ${pct}%</div>
+        <div class="set-card-body">
+          <div class="set-name">${s.name}</div>
+          <div class="set-meta">
+            <span class="set-year">📅 ${(s.releaseDate||'').replace(/\//g,'-')}</span>
+            <span class="set-cards-count">🃏 ${total}</span>
+          </div>
+          <div class="set-progress-bar"><div class="set-progress-fill" style="width:${pct}%"></div></div>
+          <div class="set-progress-text">${oc}/${total} · ${pct}%</div>
+        </div>
       </div>`;
     });
     html+=`</div></div></div>`;
@@ -372,34 +444,42 @@ function renderSets(filtered){
 function toggleEra(id){
   const body=document.getElementById('body-'+id);
   const tog=document.getElementById('toggle-'+id);
-  if(body.classList.contains('open')){body.classList.remove('open');tog.textContent='▶';}
-  else{body.classList.add('open');tog.textContent='▼';}
+  if(body.classList.contains('open')){ body.classList.remove('open'); tog.textContent='▶'; }
+  else { body.classList.add('open'); tog.textContent='▼'; }
 }
 
-// ===================== CARDS VIEW =====================
+// ===== SCAN MODE =====
+function toggleScanMode(){
+  scanMode=!scanMode;
+  const btn=document.getElementById('btn-scan');
+  btn.textContent=scanMode?'✅ Scan ON':'📷 Scan';
+  btn.classList.toggle('active',scanMode);
+  renderCards();
+}
+
+// ===== CARDS VIEW =====
 async function openSet(setId){
-  currentSetId=setId;
-  currentCards=[];
+  currentSetId=setId; currentCards=[]; scanMode=false;
+  document.getElementById('btn-scan').textContent='📷 Scan';
+  document.getElementById('btn-scan').classList.remove('active');
   document.getElementById('view-sets').classList.remove('active');
   document.getElementById('view-cards').classList.add('active');
   const setObj=allSets.find(s=>s.id===setId)||{name:setId};
   document.getElementById('cards-title').textContent=setObj.name;
   document.getElementById('cards-stats').textContent='…';
+  document.getElementById('cards-set-value').textContent='';
   document.getElementById('card-search').value='';
   document.getElementById('filter-owned').value='';
   document.getElementById('cards-container').innerHTML='<div class="loading"><span class="loading-spinner">⚡</span><br><br>Caricamento carte…</div>';
   try{
-    const detail = await fetchSetDetail(setId);
-    // TCGdex restituisce detail.cards = [{id, localId, name, image}]
-    currentCards = (detail.cards||[]).map(c=>({
-      id: c.id,
-      localId: c.localId,
-      name: c.name,
-      image: c.image ? c.image + '/low.webp' : null,
+    const detail=await fetchSetDetail(setId);
+    currentCards=(detail.cards||[]).map(c=>({
+      id:c.id, localId:c.localId, name:c.name,
+      image:c.image?c.image+'/low.webp':null,
+      rarity:c.rarity||null,
     }));
     renderCards();
-    // Carica i prezzi in background (non blocca il rendering)
-    loadPricesInBackground(currentCards, setId);
+    loadPricesInBackground(currentCards,setId);
   }catch(e){
     document.getElementById('cards-container').innerHTML=`<div class="error-box">❌ Errore: ${e.message}</div>`;
   }
@@ -408,9 +488,8 @@ async function openSet(setId){
 function goBack(){
   document.getElementById('view-cards').classList.remove('active');
   document.getElementById('view-sets').classList.add('active');
-  currentSetId=null; currentCards=[];
-  filterSets();
-  updateGlobalStats();
+  currentSetId=null; currentCards=[]; scanMode=false;
+  filterSets(); updateGlobalStats();
 }
 
 function renderCards(){
@@ -418,41 +497,64 @@ function renderCards(){
   const q=document.getElementById('card-search').value.toLowerCase().trim();
   const filter=document.getElementById('filter-owned').value;
   const visible=currentCards.filter(c=>{
-    if(q && !c.name.toLowerCase().includes(q) && !(c.localId||'').includes(q)) return false;
+    if(q&&!c.name.toLowerCase().includes(q)&&!(c.localId||'').includes(q)) return false;
     const isOwned=!!owned[currentSetId+'_'+c.id];
-    if(filter==='owned' && !isOwned) return false;
-    if(filter==='missing' && isOwned) return false;
+    if(filter==='owned'&&!isOwned) return false;
+    if(filter==='missing'&&isOwned) return false;
     return true;
   });
   const oc=currentCards.filter(c=>owned[currentSetId+'_'+c.id]).length;
   const pct=currentCards.length?Math.round(oc/currentCards.length*100):0;
   document.getElementById('cards-stats').textContent=`${oc}/${currentCards.length} · ${pct}%`;
+  updateSetValueDisplay();
+
   const html=`<div class="cards-grid">${visible.map(c=>{
     const key=currentSetId+'_'+c.id;
     const isOwned=!!owned[key];
-    // Prezzo: usa cache se disponibile, altrimenti placeholder
-    let priceHtml = '';
-    if(priceCache[c.id] !== undefined){
-      const label = getPriceLabel(priceCache[c.id]);
-      priceHtml = label
-        ? `<div class="card-price price-ok">${label}</div>`
-        : `<div class="card-price price-none">—</div>`;
+    const qty=dupes[key]||0;
+    const cmUrl='https://www.cardmarket.com/en/Pokemon/Products/Search?searchString='+encodeURIComponent(c.name);
+
+    // price
+    let priceHtml='';
+    if(priceCache[c.id]!==undefined){
+      const label=getPriceLabel(priceCache[c.id]);
+      const handler=`event.stopPropagation();window.open('${cmUrl}','_blank')`;
+      priceHtml=label
+        ?`<div class="card-price price-ok" onclick="${handler}">${label} <span style="opacity:.6">🔗</span></div>`
+        :`<div class="card-price price-none" onclick="${handler}">— <span style="opacity:.6">🔗</span></div>`;
     } else {
-      priceHtml = `<div class="card-price price-loading">···</div>`;
+      priceHtml=`<div class="card-price price-loading">···</div>`;
     }
-    return `<div class="card-item${isOwned?' owned':''}" onclick="toggleCard('${key}')" data-key="${key}" data-card-id="${c.id}">
+
+    // rarity
+    const rc=rarityClass(c.rarity);
+    const rl=rarityLabel(c.rarity);
+    const rarityHtml=rl?`<div class="card-rarity ${rc}">${rl}</div>`:'';
+
+    // duplicates badge
+    const dupHtml=qty>1?`<div class="card-dup-badge visible">×${qty}</div>`:`<div class="card-dup-badge"></div>`;
+
+    // scan mode qty controls
+    const scanHtml=scanMode?`<div class="card-qty" onclick="event.stopPropagation()">
+      <button class="qty-btn minus" onclick="changeQty('${key}',-1)">−</button>
+      <span class="qty-val">${qty}</span>
+      <button class="qty-btn" onclick="changeQty('${key}',+1)">+</button>
+    </div>`:'';
+
+    return `<div class="card-item${isOwned?' owned':''}${scanMode?' scan-mode':''}" onclick="toggleCard('${key}')" data-key="${key}" data-card-id="${c.id}">
       <div class="card-img-wrap">
-        ${c.image
-          ? `<img class="card-img loading-img" src="${c.image}" alt="${c.name}"
-               onload="this.classList.remove('loading-img')"
-               onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`
-          : ''}
+        ${c.image?`<img class="card-img loading-img" src="${c.image}" alt="${c.name}"
+          onload="this.classList.remove('loading-img')"
+          onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`:``}
         <div class="card-img-placeholder" style="${c.image?'display:none':''}">🃏<br>${c.name}</div>
         <div class="card-owned-badge">✓</div>
+        ${dupHtml}
       </div>
+      ${scanHtml}
       <div class="card-info">
         <div class="card-number">#${c.localId||c.id}</div>
         <div class="card-name">${c.name}</div>
+        ${rarityHtml}
         ${priceHtml}
       </div>
     </div>`;
@@ -460,12 +562,46 @@ function renderCards(){
   document.getElementById('cards-container').innerHTML=html;
 }
 
+// ===== TOGGLE / QUANTITY =====
 function toggleCard(key){
+  if(scanMode){
+    // in scan mode il click aggiunge 1 copia
+    changeQty(key,+1);
+    return;
+  }
   owned[key]=!owned[key];
-  if(!owned[key]) delete owned[key];
+  if(!owned[key]){ delete owned[key]; dupes[key]=0; }
+  else { dupes[key]=1; }
   saveOwned();
   const el=document.querySelector(`[data-key="${key}"]`);
   if(el) el.classList.toggle('owned',!!owned[key]);
+  updateStatsBar();
+  updateSetValueDisplay();
+  updateGlobalStats();
+}
+
+function changeQty(key,delta){
+  const cur=dupes[key]||0;
+  const next=Math.max(0,cur+delta);
+  dupes[key]=next;
+  if(next>0) owned[key]=true;
+  else { delete owned[key]; dupes[key]=0; }
+  saveOwned();
+  // aggiorna DOM
+  const el=document.querySelector(`[data-key="${key}"]`);
+  if(el){
+    el.classList.toggle('owned',next>0);
+    const qv=el.querySelector('.qty-val');
+    if(qv) qv.textContent=next;
+    const db=el.querySelector('.card-dup-badge');
+    if(db){ db.textContent=next>1?`×${next}`:''; db.classList.toggle('visible',next>1); }
+  }
+  updateStatsBar();
+  updateSetValueDisplay();
+  updateGlobalStats();
+}
+
+function updateStatsBar(){
   const oc=currentCards.filter(c=>owned[currentSetId+'_'+c.id]).length;
   const pct=currentCards.length?Math.round(oc/currentCards.length*100):0;
   document.getElementById('cards-stats').textContent=`${oc}/${currentCards.length} · ${pct}%`;
@@ -475,31 +611,29 @@ function markAll(val){
   const q=document.getElementById('card-search').value.toLowerCase().trim();
   const filter=document.getElementById('filter-owned').value;
   currentCards.forEach(c=>{
-    if(q && !c.name.toLowerCase().includes(q) && !(c.localId||'').includes(q)) return;
+    if(q&&!c.name.toLowerCase().includes(q)&&!(c.localId||'').includes(q)) return;
     const isOwned=!!owned[currentSetId+'_'+c.id];
-    if(filter==='owned' && !isOwned) return;
-    if(filter==='missing' && isOwned) return;
+    if(filter==='owned'&&!isOwned) return;
+    if(filter==='missing'&&isOwned) return;
     const key=currentSetId+'_'+c.id;
-    if(val) owned[key]=true;
-    else delete owned[key];
+    if(val){ owned[key]=true; if(!dupes[key]) dupes[key]=1; }
+    else { delete owned[key]; delete dupes[key]; }
   });
   saveOwned();
   renderCards();
+  updateGlobalStats();
 }
 
-// ===================== INIT =====================
+// ===== INIT =====
 loadOwned();
-
 (async()=>{
   try{
-    const sets = await fetchAllSets();
-    // Aggiungi era calcolata
-    allSets = sets.map(s=>{
-    // cardCount può essere {official, total} oppure un numero
-    const cc = s.cardCount;
-    const count = typeof cc === 'object' ? (cc.official || cc.total || 0) : (cc || 0);
-    return {...s, cardCount: count, _era: getEra(s)};
-  });
+    const sets=await fetchAllSets();
+    allSets=sets.map(s=>{
+      const cc=s.cardCount;
+      const count=typeof cc==='object'?(cc.official||cc.total||0):(cc||0);
+      return {...s,cardCount:count,_era:getEra(s)};
+    });
     updateGlobalStats();
     filterSets();
   }catch(e){
