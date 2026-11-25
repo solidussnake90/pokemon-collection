@@ -418,7 +418,12 @@ loadOwned();
   try{
     const sets = await fetchAllSets();
     // Aggiungi era calcolata
-    allSets = sets.map(s=>({...s, _era: getEra(s)}));
+    allSets = sets.map(s=>{
+    // cardCount può essere {official, total} oppure un numero
+    const cc = s.cardCount;
+    const count = typeof cc === 'object' ? (cc.official || cc.total || 0) : (cc || 0);
+    return {...s, cardCount: count, _era: getEra(s)};
+  });
     updateGlobalStats();
     filterSets();
   }catch(e){
