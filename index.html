@@ -73,6 +73,10 @@ header p{color:var(--text2);font-size:0.78rem;margin-top:2px;}
 .card-number{font-size:0.6rem;color:var(--text2);}
 .card-name{font-size:0.75rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .card-rarity{font-size:0.6rem;color:var(--text2);}
+.card-price{font-size:0.62rem;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.card-price.price-loading{color:var(--text2);}
+.card-price.price-ok{color:#69f0ae;}
+.card-price.price-none{color:var(--border);}
 .no-results{text-align:center;color:var(--text2);padding:40px;font-size:0.88rem;}
 /* Era colors */
 .era-WoTC .set-card::before{background:#b71c1c;} .era-WoTC .era-header{border-left-color:#ef5350;}
@@ -239,6 +243,65 @@ async function fetchSetDetail(setId){
   return apiFetch('/sets/' + setId);
 }
 
+async function fetchCardDetail(cardId){
+  return apiFetch('/cards/' + cardId);
+}
+
+// Cache prezzi in memoria per la sessione corrente
+const priceCache = {};
+
+function formatPrice(val, currency){
+  if(val == null || val === 0) return null;
+  return currency === 'EUR'
+    ? val.toFixed(2) + ' €'
+    : '$' + val.toFixed(2);
+}
+
+function getPriceLabel(pricing){
+  if(!pricing) return null;
+  // Cardmarket: preferisci avg30 (media 30 giorni), fallback su trendPrice o lowPrice
+  const cm = pricing.cardmarket;
+  if(cm){
+    const v = cm.avg30 || cm.trendPrice || cm.lowPrice || cm.avg7 || cm.avg1;
+    if(v) return '📈 ' + formatPrice(v, 'EUR');
+  }
+  // TCGPlayer: marketPrice normal
+  const tp = pricing.tcgplayer;
+  if(tp){
+    const v = (tp.normal && tp.normal.marketPrice) || (tp.holo && tp.holo.marketPrice);
+    if(v) return '📈 ' + formatPrice(v, 'USD');
+  }
+  return null;
+}
+
+// Carica prezzi in background a lotti di 5
+async function loadPricesInBackground(cards, setId){
+  const BATCH = 5;
+  for(let i = 0; i < cards.length; i += BATCH){
+    // Se l'utente ha cambiato set, interrompi
+    if(currentSetId !== setId) return;
+    const batch = cards.slice(i, i + BATCH);
+    await Promise.all(batch.map(async c => {
+      if(priceCache[c.id] !== undefined) return; // già in cache
+      try{
+        const detail = await fetchCardDetail(c.id);
+        priceCache[c.id] = detail.pricing || null;
+      }catch(e){
+        priceCache[c.id] = null;
+      }
+      // Aggiorna l'elemento nel DOM se visibile
+      const el = document.querySelector(`[data-card-id="${c.id}"] .card-price`);
+      if(el){
+        const label = getPriceLabel(priceCache[c.id]);
+        if(label){ el.textContent = label; el.className = 'card-price price-ok'; }
+        else { el.textContent = '—'; el.className = 'card-price price-none'; }
+      }
+    }));
+    // Piccola pausa tra i lotti per non stressare l'API
+    if(i + BATCH < cards.length) await new Promise(r => setTimeout(r, 300));
+  }
+}
+
 // ===================== GLOBAL STATS =====================
 function updateGlobalStats(){
   const ownedCount = Object.keys(owned).length;
@@ -335,6 +398,8 @@ async function openSet(setId){
       image: c.image ? c.image + '/low.webp' : null,
     }));
     renderCards();
+    // Carica i prezzi in background (non blocca il rendering)
+    loadPricesInBackground(currentCards, setId);
   }catch(e){
     document.getElementById('cards-container').innerHTML=`<div class="error-box">❌ Errore: ${e.message}</div>`;
   }
@@ -365,7 +430,17 @@ function renderCards(){
   const html=`<div class="cards-grid">${visible.map(c=>{
     const key=currentSetId+'_'+c.id;
     const isOwned=!!owned[key];
-    return `<div class="card-item${isOwned?' owned':''}" onclick="toggleCard('${key}')" data-key="${key}">
+    // Prezzo: usa cache se disponibile, altrimenti placeholder
+    let priceHtml = '';
+    if(priceCache[c.id] !== undefined){
+      const label = getPriceLabel(priceCache[c.id]);
+      priceHtml = label
+        ? `<div class="card-price price-ok">${label}</div>`
+        : `<div class="card-price price-none">—</div>`;
+    } else {
+      priceHtml = `<div class="card-price price-loading">···</div>`;
+    }
+    return `<div class="card-item${isOwned?' owned':''}" onclick="toggleCard('${key}')" data-key="${key}" data-card-id="${c.id}">
       <div class="card-img-wrap">
         ${c.image
           ? `<img class="card-img loading-img" src="${c.image}" alt="${c.name}"
@@ -378,6 +453,7 @@ function renderCards(){
       <div class="card-info">
         <div class="card-number">#${c.localId||c.id}</div>
         <div class="card-name">${c.name}</div>
+        ${priceHtml}
       </div>
     </div>`;
   }).join('')}</div>`;
